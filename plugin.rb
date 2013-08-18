@@ -5,9 +5,9 @@
 
 require 'omniauth-oauth2'
 
-oauth2_site = ENV['example_oauth_site_url']
-client_id = ENV['example_oauth_client_id']
-client_secret = ENV['example_oauth_client_secret']
+oauth2_site = ENV['EXAMPLE_OAUTH_SITE_URL']
+client_id = ENV['EXAMPLE_OAUTH_CLIENT_ID']
+client_secret = ENV['EXAMPLE_OAUTH_CLIENT_SECRET']
 
 auth_provider :oauth2,
     :name => 'example_oauth',
