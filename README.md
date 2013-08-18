@@ -11,11 +11,11 @@ app.
 Your Existing App
 =================
 
-Make your existing app an Oauth2 provider. I recommend the [Doorkeep
+Make your existing app an Oauth2 provider. I recommend the [Doorkeeper
 Railscast](http://railscasts.com/episodes/353-oauth-with-doorkeeper).
 
 Generate your Oauth Application ID and Application Secret. You'll need
-to include both of these in your environment.
+to include both of these in your environment. See the [sample env file](https://github.com/michaelkirk/discourse_oauth2_example/blob/master/env.sh.sample)
 
 
 Install (this) Plugin
