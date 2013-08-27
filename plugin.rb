@@ -1,66 +1,69 @@
-# name: oauth2_example
-# about: Authenticate with discourse via Oauth2
-# version: 0.1.0
+# name: existing_site_oauth2
+# about: Authenticate with discourse via ExistingSite's Oauth
+# version: 0.2.0
 # authors: Michael Kirk
 
-require 'omniauth-oauth2'
+require 'auth/oauth2_authenticator'
 
-oauth2_site = ENV['EXAMPLE_OAUTH_SITE_URL']
-client_id = ENV['EXAMPLE_OAUTH_CLIENT_ID']
-client_secret = ENV['EXAMPLE_OAUTH_CLIENT_SECRET']
+class ExistingSiteAuthenticator < ::Auth::OAuth2Authenticator
 
-auth_provider :oauth2,
-    :name => 'example_oauth',
-    :title => 'with example',
-    :message => 'Log in via the main site (Make sure pop up blockers are not enbaled).',
-    :frame_width => 920,
-    :frame_height => 800,
-    :client_id => client_id,
-    :client_secret => client_secret,
-    :client_options => {
-      :site => oauth2_site,
-    },
-    :setup => lambda { |env|
-      strategy = env["omniauth.strategy"]
+  CLIENT_ID = 'ASDFASDF'
+  CLIENT_SECRET = 'ASDF1234'
 
-      #FIXME This is pretty fucked.
-      # But two things:
-      #
-      # 1. I don't know how to require 'foo' from within a plugin
-      #
-      # 2. When defining a class within this file I'm getting a WrongConstant
-      # error
-      #
-      strategy.class.send(:include, OauthMixin)
-    }
-
-module OauthMixin
-  def raw_info
-    @raw_info ||= access_token.get('/api/v1/users/me.json').parsed
-  end
-
-  def self.included(base)
-
-    base.uid { raw_info['id'] }
-    base.info do
-      {
-        :name => raw_info['name'],
-        :email => raw_info['email']
-      }
-    end
-
-    base.extra do
-      {
-        'raw_info' => raw_info
-      }
-    end
+  def register_middleware(omniauth)
+    omniauth.provider :existing_site_oauth,
+      CLIENT_ID,
+      CLIENT_SECRET
   end
 end
 
+require 'omniauth-oauth2'
+class OmniAuth::Strategies::ExistingSiteOauth < OmniAuth::Strategies::OAuth2
+
+  # NOTE VM has to be able to resolve
+  SITE_URL = 'https://my-existing-site.com'
+
+  # Give your strategy a name.
+  option :name, "existing_site_oauth"
+
+  # This is where you pass the options you would pass when
+  # initializing your consumer from the OAuth gem.
+  option :client_options, site: SITE_URL
+
+  # These are called after authentication has succeeded. If
+  # possible, you should try to set the UID without making
+  # additional calls (if the user id is returned with the token
+  # or as a URI parameter). This may not be possible with all
+  # providers.
+  uid{ raw_info['id'] }
+
+  info do
+    {
+      :name => raw_info['name'],
+      :email => raw_info['email']
+    }
+  end
+
+  extra do
+    {
+      'raw_info' => raw_info
+    }
+  end
+
+  def raw_info
+    @raw_info ||= access_token.get('/api/v1/users/me.json').parsed
+  end
+end
+
+auth_provider :title => 'Click here to sign in.',
+    :message => 'Log in via the main site (Make sure pop up blockers are not enbaled).',
+    :frame_width => 920,
+    :frame_height => 800,
+    :authenticator => ExistingSiteAuthenticator.new('existing_site_oauth', trusted: true)
 
 register_css <<CSS
 
-.btn-social.example_oauth {
+.btn-social.existing_site_oauth {
   background: #dd4814;
 }
 

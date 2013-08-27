@@ -17,6 +17,9 @@ Railscast](http://railscasts.com/episodes/353-oauth-with-doorkeeper).
 Generate your Oauth Application ID and Application Secret. You'll need
 to include both of these in your environment. See the [sample env file](https://github.com/michaelkirk/discourse_oauth2_example/blob/master/env.sh.sample)
 
+If you are using Doorkeeper, after installing, go to
+`/oauth/applications` to add discourse as a client.
+
 
 Install (this) Plugin
 =====================
